@@ -1,4 +1,5 @@
 /*
+
   PAC Easi Series 20378 reader for EasiKey 1000
   Arduino Leonardo 32u4 3.3v board (Pro Micro) for keyboard HUD mode
 
@@ -6,6 +7,7 @@
   RX for Sig
   Gnd to Gnd
   12k resistor between VCC (3.3v) and RX pin
+  
 */
 
 #include <Keyboard.h>
@@ -17,19 +19,15 @@ int counter = 0;
 bool firstSet = false;
 bool secondSet = false;
 bool thirdSet = false;
-bool fourthSet = false;
 bool firstDone = false;
 bool secondDone = false;
-bool thirdDone = false;
 byte variable1[17];
 byte variable2[17];
 byte variable3[17];
-byte variable4[17];
 String readTest = "";
 String fullCode1 = "";
 String fullCode2 = "";
 String fullCode3 = "";
-String fullCode4 = "";
 
 void setup()
 {
@@ -115,45 +113,10 @@ void loop()
     }
   }
 
-  if (firstDone && secondDone && !thirdDone) {
+  if (firstDone && secondDone) {
     if (Serial1.available() > 0) {
       variable3[index] = Serial1.read();
       readTest = String(variable3[index++], HEX);
-
-      if (readTest == "fe" && !firstSet) {
-        firstSet = true;
-      }
-      else if (readTest == "9e" && firstSet && !secondSet) {
-        secondSet = true;
-      }
-      else if (readTest == "78" && firstSet && secondSet && !thirdSet) {
-        thirdSet = true;
-      }
-      else if (firstSet && secondSet && thirdSet) {
-        counter++;
-        if (counter == 14) {
-          thirdDone = true;
-          firstSet = false;
-          secondSet = false;
-          thirdSet = false;
-          readTest = "";
-          counter = 0;
-          index = 0;
-        }
-      }
-      else {
-        index = 0;
-        firstSet = false;
-        secondSet = false;
-        thirdSet = false;
-      }
-    }
-  }
-
-  if (firstDone && secondDone && thirdDone) {
-    if (Serial1.available() > 0) {
-      variable4[index] = Serial1.read();
-      readTest = String(variable4[index++], HEX);
 
       if (readTest == "fe" && !firstSet) {
         firstSet = true;
@@ -206,12 +169,6 @@ void doCompare() {
     fullCode3 += String(variable3[i], HEX);
     fullCode3.toUpperCase();
   }
-
-  for (uint8_t i = 0; i < 17; i++) {
-    if (variable4[i] < 16) fullCode4 += "0";
-    fullCode4 += String(variable4[i], HEX);
-    fullCode4.toUpperCase();
-  }
   if (DEBUG) {
     Serial.print("1 - ");
     Serial.println(fullCode1);
@@ -219,19 +176,18 @@ void doCompare() {
     Serial.println(fullCode2);
     Serial.print("3 - ");
     Serial.println(fullCode3);
-    Serial.print("4 - ");
-    Serial.println(fullCode4);
     Serial.println(" - ");
     delay(500);
   }
 
-  if (fullCode2 == fullCode3 && fullCode3 == fullCode4) {
+  if (fullCode1 == fullCode2 && fullCode2 == fullCode3) {
     if (DEBUG) {
       Serial.println("SUCCESS");
-      Serial.println(fullCode2);
+      Serial.println(fullCode1);
+      Serial.println(" - ");
     }
     else {
-      Keyboard.println(fullCode2);
+      Keyboard.println(fullCode1);
     }
     delay(3000);
   }
@@ -241,13 +197,6 @@ void doCompare() {
   fullCode1 = "";
   fullCode2 = "";
   fullCode3 = "";
-  fullCode4 = "";
-  readTest = "";
   firstDone = false;
   secondDone = false;
-  thirdDone = false;
-  firstSet = false;
-  secondSet = false;
-  thirdSet = false;
-  index = 0;
 }
