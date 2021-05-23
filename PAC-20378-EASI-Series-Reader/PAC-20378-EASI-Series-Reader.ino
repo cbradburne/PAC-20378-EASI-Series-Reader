@@ -1,17 +1,11 @@
 /*
-  PAC code RFID Reader (PAC ONEPROX GS3-MT)
-  DipSwitches 1 - on
-              2 - off
-              3 - on
-              4 - on
-              5 - off
-
-  For Arduino Leonardo 32u4 boards (Pro Micro) for keyboard HUD mode
+  PAC Easi Series 20378 reader for EasiKey 1000
+  Arduino Leonardo 32u4 3.3v board (Pro Micro) for keyboard HUD mode
 
   Use:
-  pin 7 for LED
-  pin 8 for Sig
+  RX for Sig
   Gnd to Gnd
+  12k resistor between VCC (3.3v) and RX pin
 */
 
 #include <elapsedMillis.h>
@@ -55,9 +49,8 @@ void loop()
 {
   if (!firstDone) {
     if (Serial1.available() > 0) {
-      byte b = Serial1.read();
-      variable1[index++] = b;
-      readTest = String(variable1[index - 1], HEX);
+      variable1[index] = Serial1.read();
+      readTest = String(variable1[index++], HEX);
 
       if (readTest == "fe" && !firstSet) {
         firstSet = true;
@@ -82,15 +75,17 @@ void loop()
       }
       else {
         index = 0;
+        firstSet = false;
+        secondSet = false;
+        thirdSet = false;
       }
     }
   }
 
   if (firstDone && !secondDone) {
     if (Serial1.available() > 0) {
-      byte b = Serial1.read();
-      variable2[index++] = b;
-      readTest = String(variable2[index - 1], HEX);
+      variable2[index] = Serial1.read();
+      readTest = String(variable2[index++], HEX);
 
       if (readTest == "fe" && !firstSet) {
         firstSet = true;
@@ -115,15 +110,17 @@ void loop()
       }
       else {
         index = 0;
+        firstSet = false;
+        secondSet = false;
+        thirdSet = false;
       }
     }
   }
 
   if (firstDone && secondDone && !thirdDone) {
     if (Serial1.available() > 0) {
-      byte b = Serial1.read();
-      variable3[index++] = b;
-      readTest = String(variable3[index - 1], HEX);
+      variable3[index] = Serial1.read();
+      readTest = String(variable3[index++], HEX);
 
       if (readTest == "fe" && !firstSet) {
         firstSet = true;
@@ -148,21 +145,22 @@ void loop()
       }
       else {
         index = 0;
+        firstSet = false;
+        secondSet = false;
+        thirdSet = false;
       }
     }
   }
 
   if (firstDone && secondDone && thirdDone) {
     if (Serial1.available() > 0) {
-      byte b = Serial1.read();
-      variable4[index++] = b;
-      readTest = String(variable4[index - 1], HEX);
-      readTest.toUpperCase();
+      variable4[index] = Serial1.read();
+      readTest = String(variable4[index++], HEX);
 
-      if (readTest == "FE" && !firstSet) {
+      if (readTest == "fe" && !firstSet) {
         firstSet = true;
       }
-      else if (readTest == "9E" && firstSet && !secondSet) {
+      else if (readTest == "9e" && firstSet && !secondSet) {
         secondSet = true;
       }
       else if (readTest == "78" && firstSet && secondSet && !thirdSet) {
@@ -183,6 +181,9 @@ void loop()
       }
       else {
         index = 0;
+        firstSet = false;
+        secondSet = false;
+        thirdSet = false;
       }
     }
   }
