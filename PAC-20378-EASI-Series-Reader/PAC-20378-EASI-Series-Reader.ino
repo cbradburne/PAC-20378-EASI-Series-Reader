@@ -8,11 +8,12 @@
   12k resistor between VCC (3.3v) and RX pin
 */
 
-#include <elapsedMillis.h>
 #include <Keyboard.h>
-elapsedMillis timeElapsed;
 
-unsigned int interval = 2000;
+bool DEBUG = false;
+
+int index = 0;
+int counter = 0;
 bool firstSet = false;
 bool secondSet = false;
 bool thirdSet = false;
@@ -20,18 +21,15 @@ bool fourthSet = false;
 bool firstDone = false;
 bool secondDone = false;
 bool thirdDone = false;
-bool DEBUG = false;
-byte variable1[100];
-byte variable2[100];
-byte variable3[100];
-byte variable4[100];
-int index = 0;
+byte variable1[17];
+byte variable2[17];
+byte variable3[17];
+byte variable4[17];
+String readTest = "";
 String fullCode1 = "";
 String fullCode2 = "";
 String fullCode3 = "";
 String fullCode4 = "";
-String readTest = "";
-int counter = 0;
 
 void setup()
 {
