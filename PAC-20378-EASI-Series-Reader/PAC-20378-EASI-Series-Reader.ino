@@ -17,13 +17,12 @@
 #include <elapsedMillis.h>
 #include <Keyboard.h>
 elapsedMillis timeElapsed;
-elapsedMillis timeElapsedLED;
-elapsedMillis LEDflash;
 
-const int LEDpin = 7;
 unsigned int interval = 2000;
-unsigned int intervalLED = 250;
 bool firstSet = false;
+bool secondSet = false;
+bool thirdSet = false;
+bool fourthSet = false;
 bool firstDone = false;
 bool secondDone = false;
 bool thirdDone = false;
@@ -36,7 +35,7 @@ String fullCode1 = "";
 String fullCode2 = "";
 String fullCode3 = "";
 String fullCode4 = "";
-String firstTest = "";
+String readTest = "";
 int counter = 0;
 
 void setup()
@@ -47,8 +46,6 @@ void setup()
   }
   Serial1.begin(9600); //9600
   Keyboard.begin();
-  pinMode(LEDpin, OUTPUT);
-  digitalWrite(LEDpin, HIGH);
 }
 
 void loop()
@@ -57,17 +54,25 @@ void loop()
     if (Serial1.available() > 0) {
       byte b = Serial1.read();
       variable1[index++] = b;
-      firstTest = String(variable1[index - 1], HEX);
-      firstTest.toUpperCase();
-      if (firstTest == "FE" && !firstSet) {
+      readTest = String(variable1[index - 1], HEX);
+
+      if (readTest == "fe" && !firstSet) {
         firstSet = true;
       }
-      else if (firstSet) {
+      else if (readTest == "9e" && firstSet && !secondSet) {
+        secondSet = true;
+      }
+      else if (readTest == "78" && firstSet && secondSet && !thirdSet) {
+        thirdSet = true;
+      }
+      else if (firstSet && secondSet && thirdSet) {
         counter++;
-        if (counter == 17) {
+        if (counter == 14) {
           firstDone = true;
           firstSet = false;
-          firstTest = "";
+          secondSet = false;
+          thirdSet = false;
+          readTest = "";
           counter = 0;
           index = 0;
         }
@@ -82,18 +87,25 @@ void loop()
     if (Serial1.available() > 0) {
       byte b = Serial1.read();
       variable2[index++] = b;
-      firstTest = String(variable2[index - 1], HEX);
-      firstTest.toUpperCase();
+      readTest = String(variable2[index - 1], HEX);
 
-      if (firstTest == "FE" && !firstSet) {
+      if (readTest == "fe" && !firstSet) {
         firstSet = true;
       }
-      else if (firstSet) {
+      else if (readTest == "9e" && firstSet && !secondSet) {
+        secondSet = true;
+      }
+      else if (readTest == "78" && firstSet && secondSet && !thirdSet) {
+        thirdSet = true;
+      }
+      else if (firstSet && secondSet && thirdSet) {
         counter++;
-        if (counter == 17) {
+        if (counter == 14) {
           secondDone = true;
           firstSet = false;
-          firstTest = "";
+          secondSet = false;
+          thirdSet = false;
+          readTest = "";
           counter = 0;
           index = 0;
         }
@@ -103,25 +115,30 @@ void loop()
       }
     }
   }
-
-  
 
   if (firstDone && secondDone && !thirdDone) {
     if (Serial1.available() > 0) {
       byte b = Serial1.read();
       variable3[index++] = b;
-      firstTest = String(variable3[index - 1], HEX);
-      firstTest.toUpperCase();
+      readTest = String(variable3[index - 1], HEX);
 
-      if (firstTest == "FE" && !firstSet) {
+      if (readTest == "fe" && !firstSet) {
         firstSet = true;
       }
-      else if (firstSet) {
+      else if (readTest == "9e" && firstSet && !secondSet) {
+        secondSet = true;
+      }
+      else if (readTest == "78" && firstSet && secondSet && !thirdSet) {
+        thirdSet = true;
+      }
+      else if (firstSet && secondSet && thirdSet) {
         counter++;
-        if (counter == 17) {
+        if (counter == 14) {
           thirdDone = true;
           firstSet = false;
-          firstTest = "";
+          secondSet = false;
+          thirdSet = false;
+          readTest = "";
           counter = 0;
           index = 0;
         }
@@ -132,22 +149,30 @@ void loop()
     }
   }
 
-
   if (firstDone && secondDone && thirdDone) {
     if (Serial1.available() > 0) {
       byte b = Serial1.read();
       variable4[index++] = b;
-      firstTest = String(variable4[index - 1], HEX);
-      firstTest.toUpperCase();
-      if (firstTest == "FE" && !firstSet) {
+      readTest = String(variable4[index - 1], HEX);
+      readTest.toUpperCase();
+
+      if (readTest == "FE" && !firstSet) {
         firstSet = true;
       }
-      else if (firstSet) {
+      else if (readTest == "9E" && firstSet && !secondSet) {
+        secondSet = true;
+      }
+      else if (readTest == "78" && firstSet && secondSet && !thirdSet) {
+        thirdSet = true;
+      }
+      else if (firstSet && secondSet && thirdSet) {
         counter++;
-        if (counter == 17) {
+        if (counter == 14) {
           Serial1.end();
           firstSet = false;
-          firstTest = "";
+          secondSet = false;
+          thirdSet = false;
+          readTest = "";
           counter = 0;
           index = 0;
           doCompare();
@@ -161,7 +186,7 @@ void loop()
 }
 
 void doCompare() {
-  
+
   for (uint8_t i = 0; i < 17; i++) {
     if (variable1[i] < 16) fullCode1 += "0";
     fullCode1 += String(variable1[i], HEX);
@@ -185,7 +210,7 @@ void doCompare() {
     fullCode4 += String(variable4[i], HEX);
     fullCode4.toUpperCase();
   }
-  /*
+/*
   Serial.print("1 - ");
   Serial.println(fullCode1);
   Serial.print("2 - ");
@@ -194,17 +219,18 @@ void doCompare() {
   Serial.println(fullCode3);
   Serial.print("4 - ");
   Serial.println(fullCode4);
-  */
-
+  Serial.println(" - ");
+  delay(500);
+*/
   if (fullCode2 == fullCode3 && fullCode3 == fullCode4) {
     //Serial.println("SUCCESS");
     //Serial.println(fullCode2);
     Keyboard.println(fullCode2);
     delay(3000);
   }
- 
+
   Serial1.begin(9600);
-  
+
   fullCode1 = "";
   fullCode2 = "";
   fullCode3 = "";
