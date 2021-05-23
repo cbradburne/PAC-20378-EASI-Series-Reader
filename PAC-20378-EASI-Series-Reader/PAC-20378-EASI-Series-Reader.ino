@@ -26,6 +26,7 @@ bool fourthSet = false;
 bool firstDone = false;
 bool secondDone = false;
 bool thirdDone = false;
+bool DEBUG = false;
 byte variable1[100];
 byte variable2[100];
 byte variable3[100];
@@ -40,9 +41,11 @@ int counter = 0;
 
 void setup()
 {
-  Serial.begin(9600); //9600
-  while (!Serial) {
-    ;
+  if (DEBUG) {
+    Serial.begin(9600); //9600
+    while (!Serial) {
+      ;
+    }
   }
   Serial1.begin(9600); //9600
   Keyboard.begin();
@@ -210,22 +213,27 @@ void doCompare() {
     fullCode4 += String(variable4[i], HEX);
     fullCode4.toUpperCase();
   }
-/*
-  Serial.print("1 - ");
-  Serial.println(fullCode1);
-  Serial.print("2 - ");
-  Serial.println(fullCode2);
-  Serial.print("3 - ");
-  Serial.println(fullCode3);
-  Serial.print("4 - ");
-  Serial.println(fullCode4);
-  Serial.println(" - ");
-  delay(500);
-*/
+  if (DEBUG) {
+    Serial.print("1 - ");
+    Serial.println(fullCode1);
+    Serial.print("2 - ");
+    Serial.println(fullCode2);
+    Serial.print("3 - ");
+    Serial.println(fullCode3);
+    Serial.print("4 - ");
+    Serial.println(fullCode4);
+    Serial.println(" - ");
+    delay(500);
+  }
+
   if (fullCode2 == fullCode3 && fullCode3 == fullCode4) {
-    //Serial.println("SUCCESS");
-    //Serial.println(fullCode2);
-    Keyboard.println(fullCode2);
+    if (DEBUG) {
+      Serial.println("SUCCESS");
+      Serial.println(fullCode2);
+    }
+    else {
+      Keyboard.println(fullCode2);
+    }
     delay(3000);
   }
 
@@ -235,7 +243,12 @@ void doCompare() {
   fullCode2 = "";
   fullCode3 = "";
   fullCode4 = "";
+  readTest = "";
   firstDone = false;
   secondDone = false;
   thirdDone = false;
+  firstSet = false;
+  secondSet = false;
+  thirdSet = false;
+  index = 0;
 }
