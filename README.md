@@ -3,7 +3,7 @@ Reader for PAC 20378 Easi Series
 
 Needed:
 3.3v Arduino Pro Micro (ATmega32U4 3.3V/8MHz) - https://www.amazon.co.uk/gp/product/B07DF5CPTB <br>
-12k resistor
+12k resistor between Arduino pins VCC (3.3v) and RX, as a pullup resistor.
 
 Wiring:
 ```
